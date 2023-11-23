@@ -24,13 +24,19 @@ path='dataset/'
 # given a tensor of size between 0 and 224, this function will zero padd it into   (224x224)
 auto_pad_tensor = lambda tensor:torch.nn.functional.pad(tensor, (224 - tensor.size()[-2:][0], 224 - tensor.size()[-2:][1]), "constant", 0)
 
+amplification_factor = 2.0
+
 # loop through the main folder referred with variable 'path', find the sub-folders named with characters
 x,y=[],[]
+
 for character_folder in os.listdir(path): # looop though the main folder
   files=os.listdir(path+character_folder) # looop though each characters folders to find all the audio files 
   for file in files:
     audio, sr = librosa.load(p+'/'+file) # load each file
-    S=librosa.feature.melspectrogram(y=audio, sr=sr) # get the spectogram of each loaded each file
+    # amplify audio 
+    
+    audio_amplified = audio * amplification_factor
+    S=librosa.feature.melspectrogram(y=audio_amplified, sr=sr) # get the spectogram of each loaded each file
     S_dB = librosa.power_to_db(S, ref=np.max)
     padded=auto_pad_tensor(torch.tensor(S_dB)) # padd tensors into 224x224 to be fed to resnet network
     padded=padded.unsqueeze(0).unsqueeze(0).flatten() # reshape the padded output into 224x224 and not 224,224,1,1
