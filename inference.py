@@ -8,6 +8,7 @@ import librosa
 import torch
 import torchvision.models as models 
 import pickle
+import numpy as np
 
 # loading fature extactor
 model = models.resnet18(pretrained=True)
@@ -26,7 +27,10 @@ files=[]
 
 with open('svm.pkl', 'rb') as f:
     svm_model = pickle.load(f)
-    
+
+def pre_process(audio):
+   
+   pass
 for i, audio_segment in enumerate(audio_segments):
     name='./'+str(i)+'.wav'
     audio_segment.export(name, format="wav")
